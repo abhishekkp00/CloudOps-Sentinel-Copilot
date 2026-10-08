@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+.github
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+CloudOps/
+
+# IDE
+.vscode/
+.idea/
+
+# Local runtime data
+uploads/
+*.db
+*.sqlite
+*.sqlite3
+
+# Jupyter
+.ipynb_checkpoints/
+Self-Rag-Code/
+
+# Project documentation not required at runtime
+docs/
+
+# Test and local tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS files
+.DS_Store
