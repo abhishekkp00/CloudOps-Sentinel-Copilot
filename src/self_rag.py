@@ -1,6 +1,9 @@
 from typing import List, TypedDict, Literal, Annotated
 import operator
 
+import psycopg
+from psycopg.rows import dict_row
+
 from pydantic import BaseModel, Field
 
 from langchain_core.documents import Document
@@ -1456,11 +1459,13 @@ def _sources(
 
 _checkpointer = None
 _graph = None
+_db_connection = None
 
 
-def _get_graph():
+def init_checkpointer():
     global _checkpointer
     global _graph
+    global _db_connection
 
     if _graph is not None:
         return _graph
@@ -1472,19 +1477,42 @@ def _get_graph():
             "DATABASE_URL is not configured."
         )
 
-    # PostgreSQL connection used by LangGraph
-    connection = PostgresSaver.from_conn_string(
-        settings.database_url
+    _db_connection = psycopg.connect(
+        settings.database_url,
+        autocommit=True,
+        prepare_threshold=0,
+        row_factory=dict_row,
     )
 
-    # Create LangGraph checkpoint tables
-    connection.setup()
+    _checkpointer = PostgresSaver(
+        _db_connection
+    )
 
-    _checkpointer = connection
+    _checkpointer.setup()
 
     _graph = build_graph(
         checkpointer=_checkpointer
     )
+
+    return _graph
+
+
+def close_checkpointer():
+    global _checkpointer
+    global _graph
+    global _db_connection
+
+    _graph = None
+    _checkpointer = None
+
+    if _db_connection is not None:
+        _db_connection.close()
+        _db_connection = None
+
+
+def _get_graph():
+    if _graph is None:
+        return init_checkpointer()
 
     return _graph
 
