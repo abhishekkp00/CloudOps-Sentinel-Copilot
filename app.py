@@ -10,7 +10,11 @@ from fastapi.templating import Jinja2Templates
 from fastapi.concurrency import run_in_threadpool
 
 from src.models import ChatRequest, ChatResponse, UploadResponse
-from src.self_rag import run_self_rag
+from src.self_rag import (
+    run_self_rag,
+    init_checkpointer,
+    close_checkpointer,
+)
 from src.ingestion import ingest_file, namespace, SUPPORTED
 from src.db import init_db, save_audit, latest_audits
 from src.config import get_settings
@@ -38,7 +42,12 @@ async def lifespan(app: FastAPI):
     Initialize application dependencies at startup.
     """
     init_db()
-    yield
+    init_checkpointer()
+
+    try:
+        yield
+    finally:
+        close_checkpointer()
 
 
 # ---------------------------------------------------------
