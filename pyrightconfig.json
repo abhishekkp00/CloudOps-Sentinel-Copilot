@@ -1,0 +1,7 @@
+{
+  "venvPath": ".",
+  "venv": "CloudOps",
+  "extraPaths": [
+    "src"
+  ]
+}
