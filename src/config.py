@@ -98,3 +98,10 @@ class Settings(BaseModel):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+# Backward-compatible convenience aliases
+EMBEDDING_MODEL = get_settings().embedding_model
+PINECONE_API_KEY = get_settings().pinecone_api_key
+PINECONE_INDEX_NAME = get_settings().pinecone_index_name
+PINECONE_NAMESPACE = get_settings().pinecone_namespace

@@ -5,27 +5,24 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
-from .config import (
-    EMBEDDING_MODEL,
-    PINECONE_API_KEY,
-    PINECONE_INDEX_NAME,
-    PINECONE_NAMESPACE,
-)
+from .config import get_settings
 
-_embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
-_pinecone = Pinecone(api_key=PINECONE_API_KEY)
+settings = get_settings()
+
+_embeddings = HuggingFaceEmbeddings(model_name=settings.embedding_model)
+_pinecone = Pinecone(api_key=settings.pinecone_api_key)
 
 
 def get_index():
     """Return the configured Pinecone index client."""
-    return _pinecone.Index(PINECONE_INDEX_NAME)
+    return _pinecone.Index(settings.pinecone_index_name)
 
 
 def get_vector_store() -> PineconeVectorStore:
     """Return the application vector store without re-indexing documents."""
     return PineconeVectorStore(
-        index_name=PINECONE_INDEX_NAME,
-        namespace=PINECONE_NAMESPACE,
+        index_name=settings.pinecone_index_name,
+        namespace=settings.pinecone_namespace,
         embedding=_embeddings,
     )
 
