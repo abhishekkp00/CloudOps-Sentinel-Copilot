@@ -667,6 +667,38 @@ This makes the API response useful for both the user interface and downstream ob
 
 ---
 
+# Product Walkthrough
+
+The screenshots below demonstrate the implemented CloudOps Sentinel experience from the perspective of an on-call engineer. They are included to make the architecture and workflow concrete while reading the project documentation.
+
+## Figure 1 — Incident Response Console
+
+The main console is designed around production incident response rather than generic chat. It exposes the Self-RAG stages — **Retrieve, Grade, Verify, and Remember** — together with the incident session, runbook vault, memory state, and evidence-oriented response area.
+
+![CloudOps Sentinel Incident Response Console](docs/screenshots/01-incident-response-console.png)
+
+## Figure 2 — New Incident Session
+
+A new session creates an isolated incident-memory context. The engineer can start with a production symptom or use the suggested incident prompts and continue the investigation within the same thread.
+
+![CloudOps Sentinel New Incident Session](docs/screenshots/02-new-incident-session.png)
+
+## Figure 3 — Self-RAG Execution
+
+While a question is being processed, the interface shows that the Self-RAG workflow is running. The request is evaluated through the retrieval, grading, verification, and memory stages before the final response is displayed.
+
+![CloudOps Sentinel Self-RAG Execution](docs/screenshots/03-self-rag-execution.png)
+
+## Figure 4 — Evidence-Grounded Incident Answer
+
+The completed response demonstrates the intended evidence-first behavior: the answer references the internal runbook evidence, exposes the selected sources, reports the route and support/usefulness status, and allows the engineer to inspect the Self-RAG workflow trace.
+
+![CloudOps Sentinel Evidence-Grounded Answer](docs/screenshots/04-evidence-grounded-answer.png)
+
+> **What the figures demonstrate:** CloudOps Sentinel is an operator-oriented Self-RAG system. An engineer describes an incident, the system retrieves and evaluates private operational evidence, verifies the generated response, preserves the incident context in PostgreSQL, and only uses web search when the private knowledge base is insufficient.
+
+---
+
 # Web Interface
 
 The application includes a dedicated incident-response console rather than a generic chat UI.
