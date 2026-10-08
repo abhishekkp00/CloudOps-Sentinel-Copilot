@@ -1,0 +1,39 @@
+.session-actions{
+  display:flex;
+  align-items:center;
+  gap:10px
+}
+
+.new-session-btn{
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--muted);
+  padding:7px 10px;
+  border-radius:8px;
+  font:600 11px 'JetBrains Mono',monospace;
+  cursor:pointer
+}
+
+.new-session-btn:hover{
+  color:var(--text);
+  border-color:var(--lime2)
+}
+
+.status.error{
+  color:var(--danger);
+}
+
+.status.success{
+  color:var(--lime);
+}
+
+.tag.internal{
+  color:var(--lime);
+  border-color:rgba(185,255,85,.28);
+  background:rgba(185,255,85,.05);
+}
+
+.tag.memory{
+  border-color:rgba(155,126,255,.38);
+  background:rgba(155,126,255,.08)
+}
