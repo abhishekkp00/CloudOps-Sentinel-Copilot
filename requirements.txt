@@ -17,8 +17,9 @@ langchain-groq>=0.3.0
 langchain-huggingface>=0.3.0
 sentence-transformers>=3.0.0
 
-# Local vector database
-faiss-cpu>=1.8.0
+# Managed vector database
+pinecone>=7.0.0
+langchain-pinecone>=0.2.0
 
 # Agent workflow
 langgraph>=0.2.0
@@ -26,6 +27,7 @@ langgraph-checkpoint-sqlite>=2.0.0
 
 # Web search fallback
 tavily-python>=0.5.0
+langchain-tavily>=0.4.0
 
 # Document processing
 pypdf>=5.0.0
