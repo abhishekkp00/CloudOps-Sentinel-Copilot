@@ -264,7 +264,10 @@ Newest message:
 
     out = (
         _llm()
-        .with_structured_output(QueryRewrite)
+        .with_structured_output(
+            QueryRewrite,
+            method="json_schema",
+        )
         .invoke(
             prompt.format_messages(
                 history=history,
@@ -356,7 +359,10 @@ If unsure, choose true.
 
     out = (
         _llm()
-        .with_structured_output(RetrieveDecision)
+        .with_structured_output(
+            RetrieveDecision,
+            method="json_schema",
+        )
         .invoke(
             prompt.format_messages(
                 question=state["question"]
@@ -510,7 +516,8 @@ Document:
     grader = (
         _llm()
         .with_structured_output(
-            RelevanceDecision
+            RelevanceDecision,
+            method="json_schema",
         )
     )
 
@@ -640,7 +647,10 @@ Previous query:
 
     out = (
         _llm()
-        .with_structured_output(QueryRewrite)
+        .with_structured_output(
+            QueryRewrite,
+            method="json_schema",
+        )
         .invoke(
             prompt.format_messages(
                 question=state["question"],
@@ -708,7 +718,10 @@ Previous web query:
 
     out = (
         _llm()
-        .with_structured_output(QueryRewrite)
+        .with_structured_output(
+            QueryRewrite,
+            method="json_schema",
+        )
         .invoke(
             prompt.format_messages(
                 question=state["question"],
@@ -955,7 +968,8 @@ Evidence:
     out = (
         _llm()
         .with_structured_output(
-            SupportDecision
+            SupportDecision,
+            method="json_schema",
         )
         .invoke(
             prompt.format_messages(
@@ -1114,7 +1128,8 @@ Answer:
     out = (
         _llm()
         .with_structured_output(
-            UsefulnessDecision
+            UsefulnessDecision,
+            method="json_schema",
         )
         .invoke(
             prompt.format_messages(
