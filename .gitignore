@@ -1,3 +1,19 @@
-CloudOps/
+# Environment
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
 CloudOps/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local data
+data/faiss/
+data/vectorstore/
