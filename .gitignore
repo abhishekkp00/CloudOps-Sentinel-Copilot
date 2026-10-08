@@ -23,3 +23,6 @@ uploads/
 *.db
 .env.*
 !.env.example
+
+# VS Code
+.vscode/
