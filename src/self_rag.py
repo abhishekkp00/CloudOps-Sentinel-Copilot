@@ -126,6 +126,7 @@ def _llm():
         api_key=settings.groq_api_key,
         model=settings.groq_model,
         temperature=0,
+        max_tokens=1024,
     )
 
 
