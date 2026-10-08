@@ -669,33 +669,69 @@ This makes the API response useful for both the user interface and downstream ob
 
 # Product Walkthrough
 
-The screenshots below demonstrate the implemented CloudOps Sentinel experience from the perspective of an on-call engineer. They are included to make the architecture and workflow concrete while reading the project documentation.
+The following four figures demonstrate the implemented CloudOps Sentinel experience from the perspective of an on-call engineer. Together, they show the complete interaction lifecycle: starting an incident session, submitting an operational question, running the Self-RAG workflow, and receiving an evidence-grounded response.
+
+The screenshots are stored under `docs/screenshots/` and use repository-relative Markdown paths so they render correctly on GitHub and when the repository is cloned.
 
 ## Figure 1 — Incident Response Console
 
-The main console is designed around production incident response rather than generic chat. It exposes the Self-RAG stages — **Retrieve, Grade, Verify, and Remember** — together with the incident session, runbook vault, memory state, and evidence-oriented response area.
+The main console is designed specifically for production incident response rather than generic chat. The interface exposes the Self-RAG stages — **Retrieve, Grade, Verify, and Remember** — alongside the incident session, runbook vault, memory state, response area, sources, and workflow trace.
 
 ![CloudOps Sentinel Incident Response Console](docs/screenshots/01-incident-response-console.png)
 
+**What this demonstrates**
+- Operator-oriented incident-response UI
+- Self-RAG stage visibility
+- Private runbook access
+- Evidence and source visibility
+- Incident memory and audit-oriented workflow
+
+---
+
 ## Figure 2 — New Incident Session
 
-A new session creates an isolated incident-memory context. The engineer can start with a production symptom or use the suggested incident prompts and continue the investigation within the same thread.
+A new session creates an isolated incident-memory context. The engineer can begin with a production symptom or use one of the suggested incident prompts. The session provides the `thread_id` boundary used to preserve context across follow-up questions.
 
 ![CloudOps Sentinel New Incident Session](docs/screenshots/02-new-incident-session.png)
 
+**What this demonstrates**
+- New incident/session initialization
+- Thread-based conversation context
+- Starter operational prompts
+- Memory-aware investigation workflow
+
+---
+
 ## Figure 3 — Self-RAG Execution
 
-While a question is being processed, the interface shows that the Self-RAG workflow is running. The request is evaluated through the retrieval, grading, verification, and memory stages before the final response is displayed.
+While a question is being processed, the interface indicates that the **Self-RAG workflow is running**. The request passes through the retrieval and evaluation pipeline before the final response is produced.
 
 ![CloudOps Sentinel Self-RAG Execution](docs/screenshots/03-self-rag-execution.png)
 
+**What this demonstrates**
+- Runtime Self-RAG execution
+- Retrieval and evidence evaluation
+- Conditional workflow orchestration
+- Processing state visible to the operator
+
+---
+
 ## Figure 4 — Evidence-Grounded Incident Answer
 
-The completed response demonstrates the intended evidence-first behavior: the answer references the internal runbook evidence, exposes the selected sources, reports the route and support/usefulness status, and allows the engineer to inspect the Self-RAG workflow trace.
+The completed response demonstrates the evidence-first design. The answer is accompanied by source information, the selected route, support status, usefulness status, memory information, and an option to inspect the Self-RAG workflow trace.
 
 ![CloudOps Sentinel Evidence-Grounded Answer](docs/screenshots/04-evidence-grounded-answer.png)
 
-> **What the figures demonstrate:** CloudOps Sentinel is an operator-oriented Self-RAG system. An engineer describes an incident, the system retrieves and evaluates private operational evidence, verifies the generated response, preserves the incident context in PostgreSQL, and only uses web search when the private knowledge base is insufficient.
+**What this demonstrates**
+- Evidence-grounded troubleshooting guidance
+- Internal runbook source attribution
+- **Private Runbooks** routing
+- Support verification: **Fully Supported**
+- Usefulness verification: **Useful**
+- PostgreSQL-backed incident memory
+- Inspectable Self-RAG execution trace
+
+> **End-to-end behavior:** An engineer describes an incident → CloudOps Sentinel evaluates whether retrieval is required → private operational evidence is retrieved and graded → weak retrieval can be refined → web search is used only when necessary → the answer is generated and verified → the final response exposes evidence, status, and trace information → incident context is persisted for follow-up questions.
 
 ---
 
@@ -795,7 +831,12 @@ CloudOps-Sentinel-Copilot/
 │
 ├── docs/
 │   ├── architecture_diagram.png
-│   └── CloudOps_Sentinel_Customer_Problem_Statement.pdf
+│   ├── CloudOps_Sentinel_Customer_Problem_Statement.pdf
+│   └── screenshots/
+│       ├── 01-incident-response-console.png
+│       ├── 02-new-incident-session.png
+│       ├── 03-self-rag-execution.png
+│       └── 04-evidence-grounded-answer.png
 │
 ├── templates/
 │   └── index.html
