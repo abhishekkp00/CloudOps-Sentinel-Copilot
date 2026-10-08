@@ -18,6 +18,9 @@ from src.self_rag import (
 from src.ingestion import ingest_file, namespace, SUPPORTED
 from src.db import init_db, save_audit, latest_audits
 from src.config import get_settings
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # ---------------------------------------------------------
