@@ -17,3 +17,9 @@ venv/
 # Local data
 data/faiss/
 data/vectorstore/
+
+uploads/
+*.sqlite
+*.db
+.env.*
+!.env.example
