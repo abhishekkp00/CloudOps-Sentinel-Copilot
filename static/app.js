@@ -68,6 +68,260 @@ function pretty(value = '') {
 }
 
 
+// ============================================================
+// MARKDOWN RENDERING
+// ============================================================
+
+function inlineMarkdown(value) {
+  let text = esc(value);
+
+  text = text.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+  );
+
+  text = text.replace(/\x60([^\x60]+)\x60/g, '<code>$1</code>');
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  text = text.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+  text = text.replace(/(?<!_)_([^_]+)_(?!_)/g, '<em>$1</em>');
+
+  return text;
+}
+
+
+function renderTable(lines) {
+  const rows = lines
+    .filter(line => line.trim())
+    .map(line =>
+      line.trim()
+        .replace(/^\|/, '')
+        .replace(/\|$/, '')
+        .split('|')
+        .map(cell => cell.trim())
+    );
+
+  if (rows.length < 2) {
+    return rows.map(row => row.join(' | ')).join('<br>');
+  }
+
+  const header = rows[0];
+  const body = rows.slice(2);
+
+  let html = '<div class="md-table-wrap"><table class="md-table"><thead><tr>';
+
+  header.forEach(cell => {
+    html += '<th>' + inlineMarkdown(cell) + '</th>';
+  });
+
+  html += '</tr></thead><tbody>';
+
+  body.forEach(row => {
+    html += '<tr>';
+
+    for (let i = 0; i < header.length; i += 1) {
+      html += '<td>' + inlineMarkdown(row[i] || '') + '</td>';
+    }
+
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+
+  return html;
+}
+
+
+function renderMarkdown(markdown = '') {
+  const source = String(markdown).replace(/\r\n/g, '\n');
+  const lines = source.split('\n');
+  const output = [];
+
+  let paragraph = [];
+  let listType = null;
+  let listItems = [];
+  let codeLines = [];
+  let inCode = false;
+  let tableLines = [];
+
+
+  function flushParagraph() {
+    if (!paragraph.length) return;
+
+    output.push(
+      '<p>' +
+      paragraph.map(line => inlineMarkdown(line.trim())).join('<br>') +
+      '</p>'
+    );
+
+    paragraph = [];
+  }
+
+
+  function flushList() {
+    if (!listItems.length) return;
+
+    const tag = listType === 'ol' ? 'ol' : 'ul';
+
+    output.push(
+      '<' + tag + '>' +
+      listItems.map(item => '<li>' + inlineMarkdown(item) + '</li>').join('') +
+      '</' + tag + '>'
+    );
+
+    listItems = [];
+    listType = null;
+  }
+
+
+  function flushTable() {
+    if (!tableLines.length) return;
+
+    output.push(renderTable(tableLines));
+    tableLines = [];
+  }
+
+
+  function flushCode() {
+    if (!inCode) return;
+
+    output.push(
+      '<pre class="md-code"><code>' +
+      esc(codeLines.join('\n')) +
+      '</code></pre>'
+    );
+
+    codeLines = [];
+    inCode = false;
+  }
+
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const raw = lines[i];
+    const line = raw.trim();
+
+
+    if (line.startsWith(String.fromCharCode(96, 96, 96))) {
+      flushParagraph();
+      flushList();
+      flushTable();
+
+      if (inCode) {
+        flushCode();
+      } else {
+        inCode = true;
+        codeLines = [];
+      }
+
+      continue;
+    }
+
+
+    if (inCode) {
+      codeLines.push(raw);
+      continue;
+    }
+
+
+    const next = lines[i + 1]?.trim() || '';
+
+    if (
+      line.includes('|') &&
+      /^\|?\s*:?-+\:?\s*(\|\s*:?-+\:?\s*)+\|?$/.test(next)
+    ) {
+      flushParagraph();
+      flushList();
+
+      tableLines = [line, next];
+      i += 1;
+
+      while (i + 1 < lines.length && lines[i + 1].trim().includes('|')) {
+        i += 1;
+        tableLines.push(lines[i].trim());
+      }
+
+      flushTable();
+      continue;
+    }
+
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+
+    if (/^#{1,6}\s+/.test(line)) {
+      flushParagraph();
+      flushList();
+
+      const match = line.match(/^(#{1,6})\s+(.*)$/);
+      const level = match[1].length;
+
+      output.push(
+        '<h' + level + '>' +
+        inlineMarkdown(match[2]) +
+        '</h' + level + '>'
+      );
+
+      continue;
+    }
+
+
+    if (/^[-*_]{3,}$/.test(line)) {
+      flushParagraph();
+      flushList();
+      output.push('<hr>');
+      continue;
+    }
+
+
+    const unordered = line.match(/^[-*+]\s+(.*)$/);
+    const ordered = line.match(/^\d+[.)]\s+(.*)$/);
+
+    if (unordered || ordered) {
+      flushParagraph();
+
+      const type = unordered ? 'ul' : 'ol';
+
+      if (listType && listType !== type) {
+        flushList();
+      }
+
+      listType = type;
+      listItems.push((unordered || ordered)[1]);
+      continue;
+    }
+
+
+    if (line.startsWith('> ')) {
+      flushParagraph();
+      flushList();
+
+      output.push(
+        '<blockquote>' +
+        inlineMarkdown(line.slice(2)) +
+        '</blockquote>'
+      );
+
+      continue;
+    }
+
+
+    paragraph.push(raw);
+  }
+
+
+  flushCode();
+  flushParagraph();
+  flushList();
+  flushTable();
+
+  return '<div class="markdown">' + output.join('') + '</div>';
+}
+
+
 function addMessage(role, html, meta = '') {
 
   const element = document.createElement('div');
@@ -374,7 +628,7 @@ async function ask() {
 
     addMessage(
       'assistant',
-      esc(data.answer || 'No answer returned.'),
+      renderMarkdown(data.answer || 'No answer returned.'),
       meta
     );
 
