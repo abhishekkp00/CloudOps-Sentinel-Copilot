@@ -21,6 +21,9 @@ sentence-transformers>=3.0.0
 pinecone>=7.0.0
 langchain-pinecone>=0.2.0
 
+# PostgreSQL
+psycopg[binary]>=3.2.0
+
 # Agent workflow
 langgraph>=0.2.0
 langgraph-checkpoint-postgres
